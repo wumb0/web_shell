@@ -196,6 +196,9 @@ sub shell{
 	if ($input eq "quit" || $input eq "exit"){
 		exit;
 	}
+        if ($input eq ""){
+            return;
+        }
         if ($input eq "debugon"){
                 $debug=1;
                 return;
