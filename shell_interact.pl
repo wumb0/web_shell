@@ -160,7 +160,7 @@ $user = `$curl=$enccmd`;
 $enccmd = URLEncode("sudo whoami");
 if (`$curl=$enccmd` =~ m/root/){
     $promptsign = "#";
-    print "You have root priviledge with sudo (no password required)!";
+    print "You have root priviledge with sudo (nopasswd) or the server is running as root!";
 }
 StripTags($user);
 chomp($user);
