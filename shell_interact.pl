@@ -11,7 +11,7 @@
 # - separate commands by ;   #    the first time but not #
 #   and have them run        #    after that             #
 #   separately (split?)      #  - Try not to make        #
-# - Fix ctrl-C               #    commands too complex   #
+#                            #    commands too complex   #
 # - remove global vars       #  - cd will bug out a bit  #
 # - clean up code, always    #    if there are multiple  #
 # - Base64 encode URL?       #    in one command         #
